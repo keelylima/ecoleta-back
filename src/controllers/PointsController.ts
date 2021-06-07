@@ -10,7 +10,7 @@ class PointsController {
             .map(item => Number(item.trim()));
 
         const points = await knex('points')
-        .join('points_items', 'points.id', '=', 'points_items.point_id')
+        .join('point_items', 'points.id', '=', 'point_items.point_id')
         .whereIn('point_items.item_id', parsedItems)
         .where('city', String(city))
         .where('uf', String(uf))
@@ -27,13 +27,13 @@ class PointsController {
         const point = await knex('points').where('id', id).first();
 
         if (!point) {
-            return response.status(400).json({ message: 'Point not foud.' })
+            return response.status(400).json({ message: 'Point not found.' })
         }
 
         const items = await knex('items')
-            .join('points_items', 'items.id', '=', 'points_items.item_id')
+            .join('point_items', 'items.id', '=', 'point_items.item_id')
             .where('point_items.point_id', id)
-            .select('item.title');
+            .select('items.title');
 
         return response.json({ point, items });
     }
@@ -64,7 +64,7 @@ class PointsController {
             uf
         }
         
-        const insertedIds = await knex('points').insert(point);
+        const insertedIds = await trx('points').insert(point);
     
         const point_id = insertedIds[0];
     
@@ -75,7 +75,9 @@ class PointsController {
             };
         })
     
-        await knex('point_items').insert(pointItems);
+        await trx('point_items').insert(pointItems);
+
+        await trx.commit();
     
         return response.json({
             id: point_id,
