@@ -49,12 +49,12 @@ class PointsController {
             city,
             uf,
             items
-        } = request.body
+        } = request.body 
     
         const trx = await knex.transaction();
 
         const point = {
-            image: 'imagem-fake',
+            image: 'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=60',
             name,
             email,
             whatsapp,
